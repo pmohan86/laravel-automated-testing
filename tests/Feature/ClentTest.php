@@ -44,8 +44,6 @@ class ClentTest extends TestCase
                 'preferred_contact_mode' => 'none'
         ]);
 
-        dd($response);
-
         $response
             ->assertStatus(200)
             ->assertJson([
