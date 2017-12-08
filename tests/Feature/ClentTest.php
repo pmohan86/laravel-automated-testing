@@ -7,6 +7,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ClentTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic test example.
      *
@@ -16,11 +18,6 @@ class ClentTest extends TestCase
     {
         $this->assertTrue(true);
     }
-
-    // public function testDatabase()
-    // {
-    // 	$clients = factory('App\Client', 10)->create();
-    // }
 
     public function testBasicTest()
     {
@@ -47,4 +44,19 @@ class ClentTest extends TestCase
         $response
             ->assertStatus(302);
     }
+
+    public function testEmailMustBeUnique()
+    {
+        $table = 'clients';
+
+        $client = factory('App\Client', 1)->create([
+            'email' => 'p@mohan.com'
+        ]);
+
+        $response = $this->json('POST', '/clients', $client->toArray());
+
+       $response
+           ->assertSessionHasErrors('email')
+           ->assertStatus(302);
+   }
 }
