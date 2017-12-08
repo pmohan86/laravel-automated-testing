@@ -7,6 +7,12 @@ services:
   - mysql
 
 before_script:
+  - mkdir storage
+  - mkdir storage/app
+  - mkdir storage/framework
+  - mkdir storage/framework/sessions
+  - mkdir storage/framework/cache
+  - mkdir storage/framework/views
   - chmod 777 -R storage
   - cp .env.travis .env
   - composer self-update
