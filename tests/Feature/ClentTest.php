@@ -67,9 +67,6 @@ class ClentTest extends TestCase
 
         $response = $this->json('POST', '/clients', $data);
 
-        // $errors = session('errors');
-// $this->assertSessionHasErrors();
-        // $this->assertEquals($errors->get('name')[0],"Your error message for validation");
         $response
            ->assertSessionHasErrors('name')
            ->assertStatus(302);
@@ -95,9 +92,5 @@ class ClentTest extends TestCase
         $response
            ->assertSessionHasErrors('gender')
            ->assertStatus(302);
-
-        // $errors = session('errors');
-           // $this->assertSessionHasErrors();
-        // $this->assertEquals($errors->get('gender')[0],"The selected gender is invalid.");
     }
 }
