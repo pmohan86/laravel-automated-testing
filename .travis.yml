@@ -10,7 +10,7 @@ before_script:
   - cp .env.travis .env
   - composer self-update
   - composer install --no-interaction
-  - mysql -e 'CREATE DATABASE dashboard_test;'
+  - php artisan migrate
 
 script:
   - php artisan key:generate
