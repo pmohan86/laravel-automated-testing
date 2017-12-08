@@ -4,10 +4,12 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\Rule;
+use Validator;
 
 class ClentTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase;
 
     /**
      * A basic test example.
@@ -26,20 +28,11 @@ class ClentTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testHttp()
+    public function testRecordIsCreated()
     {
-        $response = $this->json('POST', '/clients', 
-            [
-                'name' => 'abc',
-                'gender' => 'female',
-                'dob' => '1986-05-22',
-                'phone' => '9920656788',
-                'email' => 'pmohan_86@yahoo.com',
-                'address' => 'abc 123 3454546 465xfsfds ddgs',
-                'nationality' => 'India',
-                'education' => 'MBA',
-                'preferred_contact_mode' => 'none'
-        ]);
+        $client = factory('App\Client', 10)->create();
+
+        $response = $this->json('POST', '/clients', $client->toArray());
 
         $response
             ->assertStatus(302);
@@ -47,16 +40,64 @@ class ClentTest extends TestCase
 
     public function testEmailMustBeUnique()
     {
-        $table = 'clients';
-
         $client = factory('App\Client', 1)->create([
             'email' => 'p@mohan.com'
         ]);
 
         $response = $this->json('POST', '/clients', $client->toArray());
 
-       $response
+        $response
            ->assertSessionHasErrors('email')
            ->assertStatus(302);
    }
+
+    public function testNameIsRequired()
+    {
+        $data = 
+        [
+            'gender' => 'female',
+            'dob' => '1986-05-15',
+            'phone' => '9900655798',
+            'email' => 'p@mohan.com',
+            'address' => 'abc 123 3454546 465xfsfds',
+            'nationality' => 'India',
+            'education' => 'MBA',
+            'preferred_contact_mode' => 'none'
+        ];
+
+        $response = $this->json('POST', '/clients', $data);
+
+        // $errors = session('errors');
+// $this->assertSessionHasErrors();
+        // $this->assertEquals($errors->get('name')[0],"Your error message for validation");
+        $response
+           ->assertSessionHasErrors('name')
+           ->assertStatus(302);
+    }
+
+    public function testGenderMustBeInGivenList()
+    {
+        $data = 
+        [
+            'name' => 'pm',
+            'gender' => 'femalerr',
+            'dob' => '1986-05-15',
+            'phone' => '9900655798',
+            'email' => 'p@mohan.com',
+            'address' => 'abc 123 3454546 465xfsfds',
+            'nationality' => 'India',
+            'education' => 'MBA',
+            'preferred_contact_mode' => 'none'
+        ];
+
+        $response = $this->json('POST', '/clients', $data);
+
+        $response
+           ->assertSessionHasErrors('gender')
+           ->assertStatus(302);
+
+        // $errors = session('errors');
+           // $this->assertSessionHasErrors();
+        // $this->assertEquals($errors->get('gender')[0],"The selected gender is invalid.");
+    }
 }
